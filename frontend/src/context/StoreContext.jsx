@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const StoreContext = createContext(null);
 const StoreContextprovider = (props) => {
-   const url = "https://food-del-backend-git-main-md-raushan-jilanis-projects.vercel.app";
+   const url = "https://food-del-qhyb.vercel.app";
      const [food_list, setFoodList] = useState([]);
   const [cartItems, setCartItems] = useState({});
   const [token, setToken] = useState("");
