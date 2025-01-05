@@ -12,7 +12,7 @@ const Orders = ({ url }) => {
     const response = await axios.get(url + "/api/order/list");
     if (response.data.success) {
       setOrders(response.data.data);
-      // console.log(response.data.data);
+       console.log(response.data.data);
     } else {
       toast.error("Error");
     }
@@ -26,9 +26,9 @@ const Orders = ({ url }) => {
       await fetchAllOrders();
     }
   };
-  // useEffect(() => {
-  //   fetchAllOrders();
-  // }, []);
+   useEffect(() => {
+     fetchAllOrders();
+   }, []);
   return (
     <div className="order add">
       <h3>Order Page</h3>
