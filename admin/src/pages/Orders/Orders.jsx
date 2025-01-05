@@ -26,9 +26,9 @@ const Orders = ({ url }) => {
       await fetchAllOrders();
     }
   };
-   useEffect(() => {
-     fetchAllOrders();
-   }, []);
+   // useEffect(() => {
+   //   fetchAllOrders();
+   // }, []);
   return (
     <div className="order add">
       <h3>Order Page</h3>
