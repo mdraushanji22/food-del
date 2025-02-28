@@ -1,5 +1,9 @@
 import { createContext, useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+const onChangeHandle = (event) => {
+  searchData(event.target.value);
+};
 
 export const StoreContext = createContext(null);
 const StoreContextprovider = (props) => {
@@ -7,6 +11,8 @@ const StoreContextprovider = (props) => {
   const url = "http://localhost:4000";
   const [token, setToken] = useState("");
   const [food_list, setFoodList] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResult, setSearchResult] = useState([]);
 
   const addToCart = async (itemId) => {
     if (!cartItems[itemId]) {
@@ -22,6 +28,20 @@ const StoreContextprovider = (props) => {
       );
     }
   };
+
+  const searchData = (itemQuery) => {
+    setSearchQuery(itemQuery);
+    const filterFood = food_list.filter((data) =>
+      data.name.toLowerCase().includes(itemQuery.toLowerCase())
+    );
+
+    setSearchResult(filterFood);
+  };
+  const navigate = useNavigate();
+  const gotoResults = () => {
+    navigate("/results");
+  };
+
   const removeFromCart = async (itemId) => {
     setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] - 1 }));
     if (token) {
@@ -77,6 +97,10 @@ const StoreContextprovider = (props) => {
     url,
     token,
     setToken,
+    searchQuery,
+    searchResult,
+    searchData,
+    gotoResults,
   };
   return (
     <StoreContext.Provider value={contextValue}>
