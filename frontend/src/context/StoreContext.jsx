@@ -1,18 +1,17 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-const onChangeHandle = (event) => {
-  searchData(event.target.value);
-};
 
 export const StoreContext = createContext(null);
-const StoreContextprovider = (props) => {
+
+const StoreContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
-  const url = "http://localhost:4000";
+  const url = "http://localhost:4001";
   const [token, setToken] = useState("");
   const [food_list, setFoodList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResult, setSearchResult] = useState([]);
+  const navigate = useNavigate();
 
   const addToCart = async (itemId) => {
     if (!cartItems[itemId]) {
@@ -29,15 +28,17 @@ const StoreContextprovider = (props) => {
     }
   };
 
-  const searchData = (itemQuery) => {
-    setSearchQuery(itemQuery);
-    const filterFood = food_list.filter((data) =>
-      data.name.toLowerCase().includes(itemQuery.toLowerCase())
-    );
+  const searchData = useCallback(
+    (itemQuery) => {
+      setSearchQuery(itemQuery);
+      const filterFood = food_list.filter((data) =>
+        data.name.toLowerCase().includes(itemQuery.toLowerCase())
+      );
+      setSearchResult(filterFood);
+    },
+    [food_list]
+  );
 
-    setSearchResult(filterFood);
-  };
-  const navigate = useNavigate();
   const gotoResults = () => {
     navigate("/results");
   };
@@ -58,15 +59,19 @@ const StoreContextprovider = (props) => {
     for (const item in cartItems) {
       if (cartItems[item] > 0) {
         let itemInfo = food_list.find((product) => product._id === item);
-        totalAmount += itemInfo.price * cartItems[item];
+        if (itemInfo) {
+          totalAmount += itemInfo.price * cartItems[item];
+        }
       }
     }
     return totalAmount;
   };
+
   const fetchFoodList = async () => {
     const response = await axios.get(url + "/api/food/list");
     setFoodList(response.data.data);
   };
+
   const loadCartData = async (token) => {
     const response = await axios.post(
       url + "/api/cart/get",
@@ -85,7 +90,7 @@ const StoreContextprovider = (props) => {
       }
     }
     loadData();
-  });
+  }, []); // Added empty dependency array to run only once
 
   const contextValue = {
     food_list,
@@ -102,10 +107,12 @@ const StoreContextprovider = (props) => {
     searchData,
     gotoResults,
   };
+
   return (
     <StoreContext.Provider value={contextValue}>
       {props.children}
     </StoreContext.Provider>
   );
 };
-export default StoreContextprovider;
+
+export default StoreContextProvider;
